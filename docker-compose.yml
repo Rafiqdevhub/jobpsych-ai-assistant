@@ -9,7 +9,7 @@ services:
       - NODE_ENV=production
       - PORT=8080
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - AI_MODEL=gemini-1.5-flash
+      - AI_MODEL=gemini-2.5-flash
     volumes:
       - ./logs:/app/logs
     restart: unless-stopped
