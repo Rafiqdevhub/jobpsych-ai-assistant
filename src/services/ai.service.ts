@@ -90,12 +90,12 @@ export const chat = async (request: ChatRequest): Promise<ChatResponse> => {
     };
   }
 
-  try {
-    const systemPrompt = getSystemPrompt(request.sessionType);
-    const enhancedPrompt = `${systemPrompt}\n\nUser Query: ${
-      request.message
-    }\n\nContext: ${request.context || "No additional context provided"}`;
+  const systemPrompt = getSystemPrompt(request.sessionType);
+  const enhancedPrompt = `${systemPrompt}\n\nUser Query: ${
+    request.message
+  }\n\nContext: ${request.context || "No additional context provided"}`;
 
+  try {
     const result = await model.generateContent(enhancedPrompt);
     const response = result.response;
     const responseText = response.text();
@@ -106,9 +106,48 @@ export const chat = async (request: ChatRequest): Promise<ChatResponse> => {
       tokens: estimateTokenCount(enhancedPrompt + responseText),
       sessionType: request.sessionType || "general",
     };
-  } catch (error) {
-    logger.error("Gemini chat request failed", { error });
-    throw new Error("Failed to process chat request with Gemini");
+  } catch (error: unknown) {
+    const errorObj = error as {
+      message?: string;
+      status?: number;
+      statusText?: string;
+      code?: string;
+      details?: string;
+    };
+    logger.error("Gemini chat request failed", {
+      error: {
+        message: errorObj?.message,
+        status: errorObj?.status,
+        statusText: errorObj?.statusText,
+        code: errorObj?.code,
+        details: errorObj?.details,
+      },
+      prompt: enhancedPrompt.substring(0, 100) + "...",
+      model: request.model || defaultModel,
+    });
+
+    // Provide more specific error messages based on the error type
+    if (errorObj?.status === 503) {
+      throw new Error(
+        "Google Gemini service is temporarily unavailable. Please try again later."
+      );
+    } else if (errorObj?.status === 401) {
+      throw new Error(
+        "Invalid API key. Please check your GEMINI_API_KEY configuration."
+      );
+    } else if (errorObj?.status === 429) {
+      throw new Error("Rate limit exceeded. Please try again later.");
+    } else if (errorObj?.status === 400) {
+      throw new Error(
+        "Invalid request. Please check your input and try again."
+      );
+    } else {
+      throw new Error(
+        `Failed to process chat request with Gemini: ${
+          errorObj?.message || "Unknown error"
+        }`
+      );
+    }
   }
 };
 

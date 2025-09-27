@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as aiService from "../services/ai.service";
 import { createError } from "../middleware/errorHandler";
+import { logger } from "../utils/logger";
 
 /**
  * Handle general chat requests with JobPsych AI
@@ -23,7 +24,14 @@ export const chat = async (req: Request, res: Response): Promise<void> => {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch {
+  } catch (error) {
+    logger.error("AI chat request failed in controller", {
+      error,
+      message,
+      context,
+      model,
+      sessionType,
+    });
     throw createError("Failed to process JobPsych AI request", 500);
   }
 };
