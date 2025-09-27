@@ -45,13 +45,23 @@ let defaultModel: string;
 // Initialize the AI service
 export const initializeAIService = (): void => {
   geminiApiKey = process.env.GEMINI_API_KEY || "";
-  defaultModel = process.env.AI_MODEL || "";
+  defaultModel = process.env.AI_MODEL || "gemini-2.5-flash";
   genAI = null;
   model = null;
 
+  logger.info("Initializing AI Service...", {
+    hasApiKey: !!geminiApiKey,
+    apiKeyLength: geminiApiKey.length,
+    model: defaultModel,
+  });
+
   if (!geminiApiKey || geminiApiKey === "your-gemini-api-key-here") {
     logger.warn(
-      "GEMINI_API_KEY not configured properly. AI features will be limited."
+      "GEMINI_API_KEY not configured properly. AI features will be limited.",
+      {
+        envVarSet: !!process.env.GEMINI_API_KEY,
+        envVarValue: process.env.GEMINI_API_KEY ? "SET" : "MISSING",
+      }
     );
     return;
   }
@@ -64,8 +74,6 @@ export const initializeAIService = (): void => {
     logger.error("Failed to initialize Google Gemini AI service", { error });
   }
 };
-
-initializeAIService();
 
 export const chat = async (request: ChatRequest): Promise<ChatResponse> => {
   logger.info("Processing JobPsych chat request", {

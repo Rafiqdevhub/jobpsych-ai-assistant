@@ -1,16 +1,16 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
-import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./utils/logger";
 import { healthRoutes } from "./routes/health.routes";
 import { aiRoutes } from "./routes/ai.routes";
+import { initializeAIService } from "./services/ai.service";
 
 dotenv.config();
-
 const requiredEnvVars = ["GEMINI_API_KEY"];
 const missingEnvVars = requiredEnvVars.filter(
   (envVar) => !process.env[envVar] || process.env[envVar] === ""
@@ -24,6 +24,8 @@ if (missingEnvVars.length > 0) {
     "Please check your .env file and ensure all required variables are set."
   );
 }
+
+initializeAIService();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
