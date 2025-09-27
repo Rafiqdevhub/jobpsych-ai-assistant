@@ -23,7 +23,7 @@ export const chat = async (req: Request, res: Response): Promise<void> => {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to process JobPsych AI request", 500);
   }
 };
@@ -51,7 +51,7 @@ export const coaching = async (req: Request, res: Response): Promise<void> => {
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to process coaching request", 500);
   }
 };
@@ -79,7 +79,7 @@ export const analyzeJob = async (
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to analyze job fit", 500);
   }
 };
@@ -104,7 +104,7 @@ export const analyzeText = async (
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to analyze text", 500);
   }
 };
@@ -126,7 +126,7 @@ export const getModels = async (
         default: process.env.AI_MODEL || "gemini-1.5-flash",
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to get available models", 500);
   }
 };
@@ -145,7 +145,7 @@ export const getStatus = async (
       success: true,
       data: status,
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to get AI service status", 500);
   }
 };
@@ -176,7 +176,7 @@ export const getCareerPath = async (
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to generate career path recommendations", 500);
   }
 };
@@ -205,7 +205,7 @@ export const prepareInterview = async (
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to prepare interview guidance", 500);
   }
 };
@@ -233,7 +233,7 @@ export const analyzeSkillGap = async (
         timestamp: new Date().toISOString(),
       },
     });
-  } catch (error) {
+  } catch {
     throw createError("Failed to analyze skill gap", 500);
   }
 };
