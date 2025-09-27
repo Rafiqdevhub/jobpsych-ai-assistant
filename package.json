@@ -15,8 +15,8 @@
     "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
     "prebuild": "npm run clean",
     "start:prod": "NODE_ENV=production node dist/index.js",
-    "docker:build": "docker build -t jobpsych-ai .",
-    "docker:run": "docker run -p 8080:8080 jobpsych-ai",
+    "docker:build": "docker build -t jobpsych-ai-assistant .",
+    "docker:run": "docker run -p 8080:8080 jobpsych-ai-assistant",
     "docker:compose": "docker-compose up --build"
   },
   "keywords": [

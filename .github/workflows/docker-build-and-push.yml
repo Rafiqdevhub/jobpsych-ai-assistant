@@ -1,4 +1,4 @@
-name: Build and Push Docker Hub
+name: Build and Push Docker Image
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: rafiq9323/jobpsych-ai-assistant
+  IMAGE_NAME: jobpsych-ai-assistant
 
 jobs:
   test:
@@ -72,7 +72,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -88,6 +88,7 @@ jobs:
             org.opencontainers.image.licenses=ISC
 
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -102,7 +103,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          subject-name: ${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
@@ -116,7 +117,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          image-ref: ${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}:latest
           format: "sarif"
           output: "trivy-results.sarif"
 
@@ -137,8 +138,8 @@ jobs:
         run: |
           echo "## 🚀 Docker Image Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** \`${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags:** ${{ needs.build-and-push.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:** Latest, v1.0.0" >> $GITHUB_STEP_SUMMARY
           echo "**Branch/Tag:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -152,5 +153,5 @@ jobs:
           echo "docker run -p 8080:8080 \\" >> $GITHUB_STEP_SUMMARY
           echo "  -e GEMINI_API_KEY=your_api_key \\" >> $GITHUB_STEP_SUMMARY
           echo "  -e NODE_ENV=production \\" >> $GITHUB_STEP_SUMMARY
-          echo "  ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "  ${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
