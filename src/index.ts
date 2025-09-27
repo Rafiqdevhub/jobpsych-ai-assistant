@@ -66,7 +66,7 @@ app.get("/", (_req, res) => {
 app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
 
-app.use("*", (_req, res) => {
+app.use((_req, res) => {
   res.status(404).json({
     success: false,
     message: "Route not found",
