@@ -14,7 +14,6 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "postbuild": "cp -r logs dist/ || xcopy logs dist\\logs /E /I",
     "start:prod": "NODE_ENV=production node dist/index.js",
     "docker:build": "docker build -t jobpsych-ai .",
     "docker:run": "docker run -p 8080:8080 jobpsych-ai",
