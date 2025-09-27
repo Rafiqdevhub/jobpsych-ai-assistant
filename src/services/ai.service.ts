@@ -17,7 +17,7 @@ export interface ChatResponse {
 
 export interface AnalysisResult {
   type: string;
-  result: any;
+  result: Record<string, unknown>;
   confidence?: number;
   insights?: string[];
   recommendations?: string[];
