@@ -76,39 +76,42 @@ app.use((_req, res) => {
 
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-  logger.info(
-    `JobPsych AI Assistant server running on http://localhost:${PORT}`
-  );
-  logger.info(`API available at http://localhost:${PORT}${API_PREFIX}`);
-  logger.info(`Environment: ${NODE_ENV}`);
-  logger.info(`AI Model: ${process.env.AI_MODEL || ""}`);
-
-  if (missingEnvVars.length > 0) {
-    logger.warn(
-      `Some AI features may be limited due to missing configuration: ${missingEnvVars.join(
-        ", "
-      )}`
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  const server = app.listen(PORT, () => {
+    logger.info(
+      `JobPsych AI Assistant server running on http://localhost:${PORT}`
     );
-  } else {
-    logger.info("✅ All environment variables configured correctly");
-  }
-});
+    logger.info(`API available at http://localhost:${PORT}${API_PREFIX}`);
+    logger.info(`Environment: ${NODE_ENV}`);
+    logger.info(`AI Model: ${process.env.AI_MODEL || ""}`);
 
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM received, shutting down gracefully");
-  server.close(() => {
-    logger.info("Process terminated");
-    process.exit(0);
+    if (missingEnvVars.length > 0) {
+      logger.warn(
+        `Some AI features may be limited due to missing configuration: ${missingEnvVars.join(
+          ", "
+        )}`
+      );
+    } else {
+      logger.info("✅ All environment variables configured correctly");
+    }
   });
-});
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT received, shutting down gracefully");
-  server.close(() => {
-    logger.info("Process terminated");
-    process.exit(0);
+  process.on("SIGTERM", () => {
+    logger.info("SIGTERM received, shutting down gracefully");
+    server.close(() => {
+      logger.info("Process terminated");
+      process.exit(0);
+    });
   });
-});
+
+  process.on("SIGINT", () => {
+    logger.info("SIGINT received, shutting down gracefully");
+    server.close(() => {
+      logger.info("Process terminated");
+      process.exit(0);
+    });
+  });
+}
 
 export default app;
