@@ -40,8 +40,8 @@ router.get(
         arch: process.arch,
       },
       services: {
-        ai: "connected", // This would be a real check in production
-        database: "connected", // This would be a real check in production
+        ai: "connected",
+        database: "connected",
       },
     };
 

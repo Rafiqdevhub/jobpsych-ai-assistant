@@ -1,164 +1,319 @@
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { logger } from "../utils/logger";
 
 export interface ChatRequest {
   message: string;
   context?: string;
   model?: string;
+  sessionType?: "coaching" | "analysis" | "general";
 }
 
 export interface ChatResponse {
   response: string;
   model: string;
   tokens?: number;
+  sessionType?: string;
 }
 
 export interface AnalysisResult {
   type: string;
   result: any;
   confidence?: number;
+  insights?: string[];
+  recommendations?: string[];
 }
 
-export class AIService {
-  private apiKey: string;
-
-  constructor() {
-    this.apiKey = process.env.AI_API_KEY || "";
-
-    if (!this.apiKey) {
-      logger.warn("AI_API_KEY not configured. AI features will be limited.");
-    }
-  }
-
-  async chat(request: ChatRequest): Promise<ChatResponse> {
-    logger.info("Processing chat request", { model: request.model });
-
-    // Mock implementation - replace with actual AI service call
-    if (!this.apiKey) {
-      return {
-        response:
-          "I am a mock AI assistant. Please configure AI_API_KEY for full functionality.",
-        model: request.model || "mock",
-      };
-    }
-
-    try {
-      // This would be replaced with actual OpenAI API call
-      const mockResponse = this.generateMockResponse(request.message);
-
-      return {
-        response: mockResponse,
-        model: request.model || "gpt-3.5-turbo",
-        tokens: Math.floor(Math.random() * 100) + 50,
-      };
-    } catch (error) {
-      logger.error("Chat request failed", { error });
-      throw new Error("Failed to process chat request");
-    }
-  }
-
-  async analyzeText(
-    text: string,
-    analysisType: string
-  ): Promise<AnalysisResult> {
-    logger.info("Analyzing text", { type: analysisType, length: text.length });
-
-    try {
-      let result: any;
-
-      switch (analysisType) {
-        case "sentiment":
-          result = this.analyzeSentiment(text);
-          break;
-        case "summary":
-          result = this.generateSummary(text);
-          break;
-        case "keywords":
-          result = this.extractKeywords(text);
-          break;
-        default:
-          throw new Error(`Unsupported analysis type: ${analysisType}`);
-      }
-
-      return {
-        type: analysisType,
-        result,
-        confidence: Math.random() * 0.3 + 0.7, // Mock confidence score
-      };
-    } catch (error) {
-      logger.error("Text analysis failed", { error, type: analysisType });
-      throw new Error("Failed to analyze text");
-    }
-  }
-
-  async getAvailableModels(): Promise<string[]> {
-    // Mock implementation
-    return [
-      "gpt-3.5-turbo",
-      "gpt-4",
-      "gpt-4-turbo-preview",
-      "text-davinci-003",
-    ];
-  }
-
-  async getStatus(): Promise<any> {
-    return {
-      status: this.apiKey ? "connected" : "not_configured",
-      models: await this.getAvailableModels(),
-      lastCheck: new Date().toISOString(),
-    };
-  }
-
-  private generateMockResponse(message: string): string {
-    const responses = [
-      `I understand you said: "${message}". This is a mock response for demonstration.`,
-      `Thank you for your message about "${message}". I'm here to help!`,
-      `Regarding "${message}", I can provide assistance once properly configured.`,
-      `Your message "${message}" has been received. This is a placeholder response.`,
-    ];
-
-    return responses[Math.floor(Math.random() * responses.length)];
-  }
-
-  private analyzeSentiment(_text: string): any {
-    // Mock sentiment analysis
-    const sentiments = ["positive", "negative", "neutral"];
-    const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-
-    return {
-      sentiment,
-      score: Math.random() * 2 - 1, // -1 to 1
-      magnitude: Math.random(),
-    };
-  }
-
-  private generateSummary(text: string): any {
-    // Mock summary generation
-    const words = text.split(" ");
-    const summaryLength = Math.min(words.length, 20);
-
-    return {
-      summary: words.slice(0, summaryLength).join(" ") + "...",
-      originalLength: text.length,
-      summaryLength: summaryLength,
-    };
-  }
-
-  private extractKeywords(text: string): any {
-    // Mock keyword extraction
-    const words = text
-      .toLowerCase()
-      .split(/\W+/)
-      .filter((word) => word.length > 3);
-    const uniqueWords = [...new Set(words)];
-    const keywords = uniqueWords.slice(0, 10);
-
-    return {
-      keywords: keywords.map((keyword) => ({
-        word: keyword,
-        frequency: Math.floor(Math.random() * 5) + 1,
-        relevance: Math.random(),
-      })),
-      totalKeywords: keywords.length,
-    };
-  }
+export interface JobAnalysisRequest {
+  jobDescription?: string;
+  userProfile?: string;
+  analysisType: "fit" | "skills_gap" | "career_path" | "interview_prep";
 }
+
+export interface PsychologicalInsight {
+  category: string;
+  insight: string;
+  confidence: number;
+  actionable_advice: string;
+}
+
+// Shared state for AI service
+let geminiApiKey: string;
+let genAI: GoogleGenerativeAI | null = null;
+let model: GenerativeModel | null = null;
+let defaultModel: string;
+
+// Initialize the AI service
+export const initializeAIService = (): void => {
+  geminiApiKey = process.env.GEMINI_API_KEY || "";
+  defaultModel = process.env.AI_MODEL || "";
+  genAI = null;
+  model = null;
+
+  if (!geminiApiKey || geminiApiKey === "your-gemini-api-key-here") {
+    logger.warn(
+      "GEMINI_API_KEY not configured properly. AI features will be limited."
+    );
+    return;
+  }
+
+  try {
+    genAI = new GoogleGenerativeAI(geminiApiKey);
+    model = genAI.getGenerativeModel({ model: defaultModel });
+    logger.info("Google Gemini AI service initialized successfully");
+  } catch (error) {
+    logger.error("Failed to initialize Google Gemini AI service", { error });
+  }
+};
+
+initializeAIService();
+
+export const chat = async (request: ChatRequest): Promise<ChatResponse> => {
+  logger.info("Processing JobPsych chat request", {
+    model: request.model,
+    sessionType: request.sessionType,
+  });
+
+  if (!geminiApiKey || !model) {
+    return {
+      response:
+        "I am a JobPsych AI assistant. Please configure GEMINI_API_KEY for full functionality.",
+      model: request.model || "demo",
+      sessionType: request.sessionType || "general",
+    };
+  }
+
+  try {
+    const systemPrompt = getSystemPrompt(request.sessionType);
+    const enhancedPrompt = `${systemPrompt}\n\nUser Query: ${
+      request.message
+    }\n\nContext: ${request.context || "No additional context provided"}`;
+
+    const result = await model.generateContent(enhancedPrompt);
+    const response = result.response;
+    const responseText = response.text();
+
+    return {
+      response: responseText,
+      model: request.model || defaultModel,
+      tokens: estimateTokenCount(enhancedPrompt + responseText),
+      sessionType: request.sessionType || "general",
+    };
+  } catch (error) {
+    logger.error("Gemini chat request failed", { error });
+    throw new Error("Failed to process chat request with Gemini");
+  }
+};
+
+export const analyzeJobFit = async (
+  request: JobAnalysisRequest
+): Promise<AnalysisResult> => {
+  logger.info("Analyzing job fit with JobPsych AI", {
+    analysisType: request.analysisType,
+  });
+
+  if (!geminiApiKey || !model) {
+    return getMockJobAnalysis(request.analysisType);
+  }
+
+  try {
+    const prompt = getJobAnalysisPrompt(request);
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    return {
+      type: request.analysisType,
+      result: parseJobAnalysisResponse(responseText),
+      confidence: 0.85,
+      insights: extractInsights(responseText),
+      recommendations: extractRecommendations(responseText),
+    };
+  } catch (error) {
+    logger.error("Job analysis failed", { error });
+    throw new Error("Failed to analyze job fit");
+  }
+};
+
+export const analyzeText = async (
+  text: string,
+  analysisType: string
+): Promise<AnalysisResult> => {
+  logger.info("Analyzing text with JobPsych context", {
+    type: analysisType,
+    length: text.length,
+  });
+
+  if (!geminiApiKey || !model) {
+    return getMockAnalysis(text, analysisType);
+  }
+
+  try {
+    const prompt = getAnalysisPrompt(text, analysisType);
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    return {
+      type: analysisType,
+      result: parseAnalysisResponse(responseText, analysisType),
+      confidence: 0.8,
+      insights: extractInsights(responseText),
+      recommendations: extractRecommendations(responseText),
+    };
+  } catch (error) {
+    logger.error("Text analysis failed", { error, type: analysisType });
+    throw new Error("Failed to analyze text");
+  }
+};
+
+export const getAvailableModels = async (): Promise<string[]> => {
+  return [
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-1.0-pro",
+    "gemini-2.5-flash",
+  ];
+};
+
+export const getStatus = async (): Promise<any> => {
+  return {
+    status: geminiApiKey ? "connected" : "not_configured",
+    models: await getAvailableModels(),
+    provider: "Google Gemini",
+    features: [
+      "JobPsych Coaching",
+      "Career Analysis",
+      "Psychological Insights",
+    ],
+    lastCheck: new Date().toISOString(),
+  };
+};
+
+const getSystemPrompt = (sessionType?: string): string => {
+  const basePrompt = `You are JobPsych AI, a specialized AI assistant focused on career psychology, job analysis, and professional development. You provide evidence-based insights using psychological principles for career guidance.`;
+
+  switch (sessionType) {
+    case "coaching":
+      return `${basePrompt} You are in coaching mode. Provide supportive, encouraging guidance with actionable steps. Focus on motivation, goal-setting, and overcoming career challenges.`;
+
+    case "analysis":
+      return `${basePrompt} You are in analysis mode. Provide detailed, analytical insights about job fit, skills gaps, career trajectories, and market trends. Be objective and data-driven.`;
+
+    case "general":
+    default:
+      return `${basePrompt} Provide balanced guidance that combines psychological insights with practical career advice. Be professional, empathetic, and solution-oriented.`;
+  }
+};
+
+const getJobAnalysisPrompt = (request: JobAnalysisRequest): string => {
+  const basePrompt = `As JobPsych AI, analyze the following for career psychology insights:`;
+
+  switch (request.analysisType) {
+    case "fit":
+      return `${basePrompt}\n\nJob Description: ${request.jobDescription}\nUser Profile: ${request.userProfile}\n\nAnalyze the psychological fit between this person and role. Consider personality traits, work style, growth potential, and potential challenges.`;
+
+    case "skills_gap":
+      return `${basePrompt}\n\nJob Description: ${request.jobDescription}\nUser Profile: ${request.userProfile}\n\nIdentify skills gaps and provide a development roadmap with psychological considerations for learning preferences and motivation.`;
+
+    case "career_path":
+      return `${basePrompt}\n\nCurrent Role/Interest: ${request.jobDescription}\nUser Background: ${request.userProfile}\n\nSuggest career progression paths considering psychological factors like personality type, values, and long-term satisfaction.`;
+
+    case "interview_prep":
+      return `${basePrompt}\n\nJob Description: ${request.jobDescription}\nUser Profile: ${request.userProfile}\n\nProvide interview preparation advice focusing on psychological strategies to reduce anxiety, present authentically, and demonstrate fit.`;
+
+    default:
+      return `${basePrompt}\n\nProvide general career guidance based on the provided information.`;
+  }
+};
+
+const getAnalysisPrompt = (text: string, analysisType: string): string => {
+  const basePrompt = `As JobPsych AI, analyze this career-related content:`;
+
+  switch (analysisType) {
+    case "sentiment":
+      return `${basePrompt}\n\n"${text}"\n\nAnalyze the emotional tone and psychological state reflected in this text. Consider stress levels, confidence, motivation, and career satisfaction.`;
+
+    case "summary":
+      return `${basePrompt}\n\n"${text}"\n\nSummarize the key career and psychological themes, highlighting important insights about the person's professional situation.`;
+
+    case "keywords":
+      return `${basePrompt}\n\n"${text}"\n\nExtract key career-related terms, psychological indicators, and professional themes. Focus on skills, motivations, concerns, and opportunities.`;
+
+    default:
+      return `${basePrompt}\n\n"${text}"\n\nProvide comprehensive analysis with career psychology insights.`;
+  }
+};
+
+const estimateTokenCount = (text: string): number => {
+  return Math.ceil(text.length / 4);
+};
+
+const parseJobAnalysisResponse = (response: string): any => {
+  return {
+    analysis: response,
+    timestamp: new Date().toISOString(),
+  };
+};
+
+const parseAnalysisResponse = (response: string, analysisType: string): any => {
+  return {
+    analysisType,
+    content: response,
+    timestamp: new Date().toISOString(),
+  };
+};
+
+const extractInsights = (response: string): string[] => {
+  const lines = response.split("\n");
+  return lines
+    .filter(
+      (line) =>
+        line.includes("insight") ||
+        line.includes("important") ||
+        line.includes("key")
+    )
+    .slice(0, 3);
+};
+
+const extractRecommendations = (response: string): string[] => {
+  const lines = response.split("\n");
+  return lines
+    .filter(
+      (line) =>
+        line.includes("recommend") ||
+        line.includes("suggest") ||
+        line.includes("should")
+    )
+    .slice(0, 3);
+};
+
+const getMockJobAnalysis = (analysisType: string): AnalysisResult => {
+  return {
+    type: analysisType,
+    result: {
+      analysis: `Mock ${analysisType} analysis - Please configure GEMINI_API_KEY for real insights`,
+      score: Math.random() * 100,
+      factors: ["Communication", "Problem Solving", "Adaptability"],
+    },
+    confidence: 0.5,
+    insights: ["This is a demo insight", "Configure API key for real analysis"],
+    recommendations: [
+      "Set up Gemini API key",
+      "Provide more detailed information",
+    ],
+  };
+};
+
+const getMockAnalysis = (
+  text: string,
+  analysisType: string
+): AnalysisResult => {
+  return {
+    type: analysisType,
+    result: {
+      content: `Mock ${analysisType} analysis of: ${text.substring(0, 50)}...`,
+      timestamp: new Date().toISOString(),
+    },
+    confidence: 0.5,
+    insights: ["Demo mode active"],
+    recommendations: ["Configure GEMINI_API_KEY for full functionality"],
+  };
+};

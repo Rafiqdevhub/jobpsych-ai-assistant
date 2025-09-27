@@ -1,10 +1,13 @@
-# AI Assistant Backend
+# JobPsych AI Assistant Backend
 
-A TypeScript Express.js backend for an AI assistant application with comprehensive features and best practices.
+A TypeScript Express.js backend for JobPsych AI assistant application with Google Gemini integration, featuring career psychology insights, job analysis, and professional development guidance.
 
 ## Features
 
 - 🚀 **Express.js** with TypeScript
+- 🧠 **Google Gemini AI** integration for career psychology
+- 🎯 **JobPsych Specialization** - Career coaching, job analysis, and professional development
+- 🏗️ **Controller Architecture** - Clean separation of concerns
 - 🛡️ **Security** with Helmet, CORS, and Rate Limiting
 - 📝 **Logging** with Winston
 - ✅ **Validation** with Joi
@@ -30,7 +33,7 @@ A TypeScript Express.js backend for an AI assistant application with comprehensi
 
 1. **Install dependencies:**
 
-   ```bash
+   ```bashv
    npm install
    ```
 
@@ -69,6 +72,8 @@ A TypeScript Express.js backend for an AI assistant application with comprehensi
 ```
 src/
 ├── index.ts              # Main application entry
+├── controllers/          # Request handlers
+│   └── ai.controller.ts  # AI endpoint controllers
 ├── middleware/           # Custom middleware
 │   ├── errorHandler.ts   # Error handling
 │   └── validation.ts     # Request validation
@@ -76,7 +81,7 @@ src/
 │   ├── ai.routes.ts     # AI-related endpoints
 │   └── health.routes.ts # Health check endpoints
 ├── services/            # Business logic
-│   └── ai.service.ts    # AI service implementation
+│   └── ai.service.ts    # Google Gemini AI service
 └── utils/               # Utilities
     └── logger.ts        # Logging configuration
 ```
@@ -104,7 +109,3 @@ curl -X POST http://localhost:3000/api/ai/analyze \
 - **Linting:** `npm run lint`
 - **Testing:** `npm test`
 - **Build:** `npm run build`
-
-## License
-
-ISC
