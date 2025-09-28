@@ -18,6 +18,11 @@ on:
         required: false
         default: "latest"
 
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
 env:
   REGISTRY: docker.io
   IMAGE_NAME: jobpsych-ai-assistant
