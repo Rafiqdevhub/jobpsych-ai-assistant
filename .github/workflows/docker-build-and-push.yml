@@ -20,8 +20,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 
 env:
   REGISTRY: docker.io
@@ -104,13 +102,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ env.REGISTRY }}/rafiq9323/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
 
   security-scan:
     name: Security Scan
