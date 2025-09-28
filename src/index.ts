@@ -35,7 +35,10 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000"],
+    origin: process.env.CORS_ORIGIN?.split(",") || [
+      "http://localhost:3000",
+      "https://jobpsych.vercel.app",
+    ],
     credentials: true,
   })
 );
