@@ -28,7 +28,7 @@ if (missingEnvVars.length > 0) {
 initializeAIService();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 const API_PREFIX = process.env.API_PREFIX || "/api";
 const NODE_ENV = process.env.NODE_ENV || "development";
 
