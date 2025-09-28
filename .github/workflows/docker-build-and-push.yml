@@ -17,6 +17,11 @@ on:
         description: "Custom tag name for the Docker image"
         required: false
         default: "latest"
+      enable_security_scan:
+        description: "Enable security scanning with Trivy"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -109,7 +114,11 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     needs: build-and-push
-    if: github.event_name != 'pull_request'
+    if: |
+      github.event_name != 'pull_request' && (
+        github.event_name != 'workflow_dispatch' ||
+        github.event.inputs.enable_security_scan == 'true'
+      )
 
     steps:
       - name: Run Trivy vulnerability scanner
@@ -128,7 +137,7 @@ jobs:
   deploy-notification:
     name: Deployment Notification
     runs-on: ubuntu-latest
-    needs: [build-and-push, security-scan]
+    needs: [build-and-push]
     if: always() && github.event_name != 'pull_request'
 
     steps:
