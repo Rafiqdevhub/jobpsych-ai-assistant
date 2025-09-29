@@ -1,6 +1,7 @@
 import winston from "winston";
+import { config } from "../config/env";
 
-const logLevel = process.env.LOG_LEVEL || "info";
+const logLevel = config.logLevel;
 
 // Simple console-only logger for production compatibility
 export const logger = winston.createLogger({
@@ -10,7 +11,7 @@ export const logger = winston.createLogger({
       format: "YYYY-MM-DD HH:mm:ss",
     }),
     winston.format.errors({ stack: true }),
-    process.env.NODE_ENV === "production"
+    config.nodeEnv === "production"
       ? winston.format.json()
       : winston.format.combine(
           winston.format.colorize(),

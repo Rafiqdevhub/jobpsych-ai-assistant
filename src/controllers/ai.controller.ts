@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as aiService from "../services/ai.service";
 import { createError } from "../middleware/errorHandler";
 import { logger } from "../utils/logger";
+import { config } from "../config/env";
 
 /**
  * Handle general chat requests with JobPsych AI
@@ -13,7 +14,7 @@ export const chat = async (req: Request, res: Response): Promise<void> => {
     const response = await aiService.chat({
       message,
       context,
-      model: model || process.env.AI_MODEL || "",
+      model: model || config.aiModel,
       sessionType: sessionType || "general",
     });
 
@@ -131,7 +132,7 @@ export const getModels = async (
       success: true,
       data: {
         models,
-        default: process.env.AI_MODEL || "gemini-1.5-flash",
+        default: config.aiModel,
       },
     });
   } catch {

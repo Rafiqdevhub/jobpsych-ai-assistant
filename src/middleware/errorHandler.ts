@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
+import { config } from "../config/env";
 
 export interface AppError extends Error {
   statusCode?: number;
@@ -25,7 +26,7 @@ export const errorHandler = (
   });
 
   // Don't leak error details in production
-  if (process.env.NODE_ENV === "production" && statusCode === 500) {
+  if (config.nodeEnv === "production" && statusCode === 500) {
     message = "Internal Server Error";
   }
 
@@ -33,7 +34,7 @@ export const errorHandler = (
     success: false,
     message,
     timestamp: new Date().toISOString(),
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(config.nodeEnv === "development" && { stack: err.stack }),
   });
 };
 

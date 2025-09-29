@@ -9,6 +9,7 @@ import { logger } from "./utils/logger";
 import { healthRoutes } from "./routes/health.routes";
 import { aiRoutes } from "./routes/ai.routes";
 import { initializeAIService } from "./services/ai.service";
+import { config } from "./config/env";
 
 dotenv.config();
 const requiredEnvVars = ["GEMINI_API_KEY"];
@@ -28,24 +29,21 @@ if (missingEnvVars.length > 0) {
 initializeAIService();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const API_PREFIX = process.env.API_PREFIX || "/api";
-const NODE_ENV = process.env.NODE_ENV || "development";
+const PORT = config.port;
+const API_PREFIX = config.apiPrefix;
+const NODE_ENV = config.nodeEnv;
 
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || [
-      "http://localhost:3000",
-      "https://jobpsych.vercel.app",
-    ],
+    origin: config.corsOrigins,
     credentials: true,
   })
 );
 
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000"), // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
   message: "Too many requests from this IP, please try again later.",
 });
 app.use(limiter);
@@ -80,14 +78,14 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // Only start server if not in test environment
-if (process.env.NODE_ENV !== "test") {
+if (config.nodeEnv !== "test") {
   const server = app.listen(PORT, () => {
     logger.info(
       `JobPsych AI Assistant server running on http://localhost:${PORT}`
     );
     logger.info(`API available at http://localhost:${PORT}${API_PREFIX}`);
     logger.info(`Environment: ${NODE_ENV}`);
-    logger.info(`AI Model: ${process.env.AI_MODEL || ""}`);
+    logger.info(`AI Model: ${config.aiModel}`);
 
     if (missingEnvVars.length > 0) {
       logger.warn(

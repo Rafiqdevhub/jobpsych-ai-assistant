@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { logger } from "../utils/logger";
+import { config } from "../config/env";
 
 /**
  * Diagnostic endpoint to test Google Gemini API connection
@@ -10,14 +11,13 @@ export const diagnoseAPI = async (
 ): Promise<void> => {
   const diagnostics = {
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
+    environment: config.nodeEnv,
     apiKey: {
-      exists: !!process.env.GEMINI_API_KEY,
-      length: process.env.GEMINI_API_KEY?.length || 0,
-      firstChars:
-        process.env.GEMINI_API_KEY?.substring(0, 10) + "..." || "Not set",
+      exists: !!config.geminiApiKey,
+      length: config.geminiApiKey?.length || 0,
+      firstChars: config.geminiApiKey?.substring(0, 10) + "..." || "Not set",
     },
-    model: process.env.AI_MODEL || "gemini-2.5-flash",
+    model: config.aiModel,
     suggestions: [] as string[],
   };
 
@@ -40,8 +40,8 @@ export const diagnoseAPI = async (
   try {
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
 
-    if (process.env.GEMINI_API_KEY) {
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    if (config.geminiApiKey) {
+      const genAI = new GoogleGenerativeAI(config.geminiApiKey);
       const model = genAI.getGenerativeModel({ model: diagnostics.model });
 
       // Try a simple test request

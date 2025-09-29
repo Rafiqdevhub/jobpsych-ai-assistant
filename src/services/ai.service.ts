@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { logger } from "../utils/logger";
+import { config } from "../config/env";
 
 export interface ChatRequest {
   message: string;
@@ -44,8 +45,8 @@ let defaultModel: string;
 
 // Initialize the AI service
 export const initializeAIService = (): void => {
-  geminiApiKey = process.env.GEMINI_API_KEY || "";
-  defaultModel = process.env.AI_MODEL || "gemini-2.5-flash";
+  geminiApiKey = config.geminiApiKey;
+  defaultModel = config.aiModel;
   genAI = null;
   model = null;
 
@@ -59,8 +60,8 @@ export const initializeAIService = (): void => {
     logger.warn(
       "GEMINI_API_KEY not configured properly. AI features will be limited.",
       {
-        envVarSet: !!process.env.GEMINI_API_KEY,
-        envVarValue: process.env.GEMINI_API_KEY ? "SET" : "MISSING",
+        envVarSet: !!config.geminiApiKey,
+        envVarValue: config.geminiApiKey ? "SET" : "MISSING",
       }
     );
     return;
