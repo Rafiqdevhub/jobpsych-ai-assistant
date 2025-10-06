@@ -1,4 +1,4 @@
-import { createError } from "../middleware/errorHandler";
+import { createError } from "../src/middleware/errorHandler";
 
 describe("Error Handler", () => {
   it("should create error with status code", () => {
