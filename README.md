@@ -4,37 +4,18 @@ A TypeScript Express.js backend for JobPsych AI assistant application with Googl
 
 ## Features
 
-- 🚀 **Express.js 5.x** with TypeScript
-- 🧠 **Google Gemini 2.5 Flash** integration for career psychology
-- 🎯 **JobPsych Specialization** - Career coaching, job analysis, and professional development
-- 🏗️ **Functional Architecture** - Clean separation of concerns with functional controllers
-- 🛡️ **Security** with Helmet, CORS, Rate Limiting, and Compression
-- 📝 **Console Logging** with Winston (production-optimized)
-- ✅ **Validation** with Joi schemas
-- 🧪 **Testing** with Jest (essential test suite)
-- 📊 **Code Quality** with ESLint
-- 🔧 **Development** with hot reload (ts-node-dev)
-- 🐳 **Docker** support with multi-stage builds
-- ☁️ **Deployment** ready for Vercel serverless and Docker Hub
-
-## API Endpoints
-
-### Health Check
-
-- `GET /api/health` - Basic health check with system metrics
-- `GET /api/health/detailed` - Detailed system information and service status
-
-### AI Assistant
-
-- `POST /api/ai/chat` - General chat with JobPsych AI assistant
-- `POST /api/ai/coaching` - Career coaching sessions with specialized guidance
-- `POST /api/ai/analyze-job` - Job analysis and career fit assessment
-- `POST /api/ai/analyze` - Text analysis (sentiment, summary, keywords)
-- `POST /api/ai/career-path` - Career path recommendations
-- `POST /api/ai/interview-prep` - Interview preparation assistance
-- `POST /api/ai/skill-gap` - Skill gap analysis
-- `GET /api/ai/models` - Get available AI models
-- `GET /api/ai/status` - AI service status and configuration
+- **Express.js 5.x** with TypeScript
+- **Google Gemini 2.5 Flash** integration for career psychology
+- **JobPsych Specialization** - Career coaching, job analysis, and professional development
+- **Functional Architecture** - Clean separation of concerns with functional controllers
+- **Security** with Helmet, CORS, Rate Limiting, and Compression
+- **Console Logging** with Winston (production-optimized)
+- **Validation** with Joi schemas
+- **Testing** with Jest (essential test suite)
+- **Code Quality** with ESLint
+- **Development** with hot reload (ts-node-dev)
+- **Docker** support with multi-stage builds
+- **Deployment** ready for Vercel serverless and Docker Hub
 
 ## Quick Start
 
@@ -86,103 +67,50 @@ A TypeScript Express.js backend for JobPsych AI assistant application with Googl
 ## Project Structure
 
 ```
-jobpsych-ai-assistant/
-├── api/
-│   └── index.ts                 # Vercel serverless entry point
-├── src/
-│   ├── index.ts                 # Main Express application
-│   ├── controllers/
-│   │   ├── ai.controller.ts     # Functional AI endpoint handlers
-│   │   └── diagnostic.controller.ts # API diagnostics
-│   ├── middleware/
-│   │   ├── errorHandler.ts      # Global error handling with async wrapper
-│   │   └── validation.ts        # Joi request validation middleware
-│   ├── routes/
-│   │   ├── ai.routes.ts         # AI API routes with comprehensive validation
-│   │   └── health.routes.ts     # Health check endpoints
-│   ├── services/
-│   │   └── ai.service.ts        # Google Gemini AI integration service
-│   ├── utils/
-│   │   └── logger.ts            # Console-based Winston logging
-│   └── __tests__/               # Essential test suite
-│       ├── setup.ts             # Test environment configuration
-│       ├── app.test.ts          # Core application tests
-│       ├── ai.service.test.ts   # AI service tests
-│       ├── errorHandler.test.ts # Error handling tests
-│       └── logger.test.ts       # Logger tests
-├── .github/workflows/
-│   └── docker-build-and-push.yml # CI/CD pipeline for Docker Hub
-├── Dockerfile                   # Multi-stage Docker build
-├── docker-compose.yml           # Local development setup
-├── vercel.json                  # Vercel deployment configuration
-├── package.json                 # Dependencies and scripts
-├── tsconfig.json               # TypeScript configuration
-├── jest.config.js              # Jest testing configuration
-├── eslint.config.js            # ESLint v9 flat configuration
-├── WORKFLOW.md                 # Complete development workflow docs
-└── .env                        # Environment variables
-```
 
-## API Usage Examples
-
-### General Chat with JobPsych AI
-
-```bash
-curl -X POST http://localhost:5000/api/ai/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "I need career advice for transitioning to tech",
-    "context": "I have 5 years in marketing",
-    "sessionType": "coaching"
-  }'
-```
-
-### Career Coaching Session
-
-```bash
-curl -X POST http://localhost:5000/api/ai/coaching \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "How do I negotiate a better salary?",
-    "sessionType": "goal_setting",
-    "userContext": "Mid-level developer with 3 years experience"
-  }'
-```
-
-### Job Analysis
-
-```bash
-curl -X POST http://localhost:5000/api/ai/analyze-job \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jobDescription": "Senior Software Engineer position requiring React and Node.js",
-    "userProfile": "Full-stack developer with 4 years experience",
-    "analysisType": "fit"
-  }'
-```
-
-### Text Analysis
-
-```bash
-curl -X POST http://localhost:5000/api/ai/analyze \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "I love working with this team!",
-    "analysisType": "sentiment"
-  }'
-```
-
-### Career Path Recommendations
-
-```bash
-curl -X POST http://localhost:5000/api/ai/career-path \
-  -H "Content-Type: application/json" \
-  -d '{
-    "currentRole": "Software Developer",
-    "experience": "3 years in web development",
-    "interests": "AI, machine learning, leadership",
-    "goals": "Become a tech lead within 2 years"
-  }'
+├── 📁 .github
+│   └── 📁 workflows
+│       ├── ⚙️ docker-build-and-push.yml
+│       └── ⚙️ tests.yml
+├── 📁 api
+│   └── 📄 index.ts
+├── 📁 logs
+├── 📁 src
+│   ├── 📁 config
+│   │   └── 📄 env.ts
+│   ├── 📁 controllers
+│   │   ├── 📄 ai.controller.ts
+│   │   └── 📄 diagnostic.controller.ts
+│   ├── 📁 middleware
+│   │   ├── 📄 errorHandler.ts
+│   │   └── 📄 validation.ts
+│   ├── 📁 routes
+│   │   ├── 📄 ai.routes.ts
+│   │   ├── 📄 health.routes.ts
+│   │   └── 📄 home.routes.ts
+│   ├── 📁 services
+│   │   └── 📄 ai.service.ts
+│   ├── 📁 utils
+│   │   └── 📄 logger.ts
+│   └── 📄 index.ts
+├── 📁 tests
+│   ├── 📄 ai.service.test.ts
+│   ├── 📄 app.test.ts
+│   ├── 📄 errorHandler.test.ts
+│   ├── 📄 home.test.ts
+│   ├── 📄 logger.test.ts
+│   └── 📄 setup.ts
+├── 📄 .eslintrc.js
+├── ⚙️ .gitignore
+├── 🐳 Dockerfile
+├── 📝 README.md
+├── ⚙️ docker-compose.yml
+├── 📄 eslint.config.js
+├── 📄 jest.config.js
+├── ⚙️ package-lock.json
+├── ⚙️ package.json
+├── ⚙️ tsconfig.json
+└── ⚙️ vercel.json
 ```
 
 ## Development

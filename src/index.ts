@@ -10,6 +10,7 @@ import { healthRoutes } from "./routes/health.routes";
 import { aiRoutes } from "./routes/ai.routes";
 import { initializeAIService } from "./services/ai.service";
 import { config } from "./config/env";
+import { homeRoutes } from "./routes/home.routes";
 
 dotenv.config();
 const requiredEnvVars = ["GEMINI_API_KEY"];
@@ -60,9 +61,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.get("/", (_req, res) => {
-  res.send("Welcome to the AI Assistant API. Visit /api for endpoints.");
-});
+app.use("/", homeRoutes);
 
 app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
