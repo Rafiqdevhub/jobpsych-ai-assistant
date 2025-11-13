@@ -20,7 +20,7 @@ const missingEnvVars = requiredEnvVars.filter(
 
 if (missingEnvVars.length > 0) {
   console.error(
-    `❌ Missing required environment variables: ${missingEnvVars.join(", ")}`
+    `Missing required environment variables: ${missingEnvVars.join(", ")}`
   );
   console.error(
     "Please check your .env file and ensure all required variables are set."
@@ -93,7 +93,7 @@ if (config.nodeEnv !== "test") {
         )}`
       );
     } else {
-      logger.info("✅ All environment variables configured correctly");
+      logger.info("All environment variables configured correctly");
     }
   });
 
