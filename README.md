@@ -7,6 +7,7 @@ A TypeScript Express.js backend for JobPsych AI assistant application with Googl
 - **Express.js 5.x** with TypeScript
 - **Google Gemini 2.5 Flash** integration for career psychology
 - **JobPsych Specialization** - Career coaching, job analysis, and professional development
+- **HireDesk AI Assistant** - AI-powered recruiter assistance for screening, interviews, and candidate matching
 - **Functional Architecture** - Clean separation of concerns with functional controllers
 - **Security** with Helmet, CORS, Rate Limiting, and Compression
 - **Console Logging** with Winston (production-optimized)
@@ -80,16 +81,19 @@ A TypeScript Express.js backend for JobPsych AI assistant application with Googl
 │   │   └── 📄 env.ts
 │   ├── 📁 controllers
 │   │   ├── 📄 ai.controller.ts
-│   │   └── 📄 diagnostic.controller.ts
+│   │   ├── 📄 diagnostic.controller.ts
+│   │   └── 📄 hiredesk.controller.ts
 │   ├── 📁 middleware
 │   │   ├── 📄 errorHandler.ts
 │   │   └── 📄 validation.ts
 │   ├── 📁 routes
 │   │   ├── 📄 ai.routes.ts
 │   │   ├── 📄 health.routes.ts
+│   │   ├── 📄 hiredesk.routes.ts
 │   │   └── 📄 home.routes.ts
 │   ├── 📁 services
-│   │   └── 📄 ai.service.ts
+│   │   ├── 📄 ai.service.ts
+│   │   └── 📄 hiredesk.service.ts
 │   ├── 📁 utils
 │   │   └── 📄 logger.ts
 │   └── 📄 index.ts
@@ -97,6 +101,7 @@ A TypeScript Express.js backend for JobPsych AI assistant application with Googl
 │   ├── 📄 ai.service.test.ts
 │   ├── 📄 app.test.ts
 │   ├── 📄 errorHandler.test.ts
+│   ├── 📄 hiredesk.test.ts
 │   ├── 📄 home.test.ts
 │   ├── 📄 logger.test.ts
 │   └── 📄 setup.ts

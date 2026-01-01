@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./utils/logger";
 import { healthRoutes } from "./routes/health.routes";
 import { aiRoutes } from "./routes/ai.routes";
+import { hireDeskRoutes } from "./routes/hiredesk.routes";
 import { initializeAIService } from "./services/ai.service";
 import { config } from "./config/env";
 import { homeRoutes } from "./routes/home.routes";
@@ -65,6 +66,7 @@ app.use("/", homeRoutes);
 
 app.use(`${API_PREFIX}/health`, healthRoutes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
+app.use(`${API_PREFIX}/hiredesk`, hireDeskRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({

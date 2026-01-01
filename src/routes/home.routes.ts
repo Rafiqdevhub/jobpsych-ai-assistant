@@ -98,6 +98,17 @@ router.get(
           path: `${config.apiPrefix}/ai/skill-gap`,
           description: "Skill gap analysis",
         },
+        {
+          method: "POST",
+          path: `${config.apiPrefix}/hiredesk/query`,
+          description:
+            "HireDesk - AI assistant for recruiters (screening, interviews, job postings, candidate matching)",
+        },
+        {
+          method: "GET",
+          path: `${config.apiPrefix}/hiredesk/status`,
+          description: "HireDesk service status and supported query types",
+        },
       ],
       workflow: {
         description: "Codebase request processing workflow",
